@@ -11,14 +11,10 @@ local GuiService = game:GetService("GuiService")
 local TextService = game:GetService("TextService")
 
 local Library = {}
-Library.__index = Library
 
 function Library:AddWindow(title, config)
-    config = config or {}
-
     local window = {}
-    setmetatable(window, Library)
-    
+
     window.main_color = config.main_color or Color3.fromRGB(41, 74, 122)
     window.min_size = config.min_size or Vector2.new(580, 400)
     window.minimize_circle = config.minimize_circle or false

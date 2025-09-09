@@ -14,6 +14,8 @@ local Library = {}
 Library.__index = Library
 
 function Library:AddWindow(title, config)
+    config = config or {}
+
     local window = {}
     setmetatable(window, Library)
     

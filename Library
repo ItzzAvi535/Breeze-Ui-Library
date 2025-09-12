@@ -1,4 +1,4 @@
--- ModuleScript (e.g., in ReplicatedStorage.Breeze)
+-- By Avi
 local Breeze = {}
 
 local Players = game:GetService("Players")

@@ -1,144 +1,188 @@
+-- ModuleScript (e.g., in ReplicatedStorage.Breeze)
 local Breeze = {}
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 
--- helper
-local function new(inst, props)
-    local obj = Instance.new(inst)
-    for k, v in pairs(props) do
-        obj[k] = v
+local player = Players.LocalPlayer
+local gui = player:WaitForChild("PlayerGui")
+
+-- Function to create a window
+function Breeze:CreateWindow(titleText)
+    local window = {}
+
+    -- Create ScreenGui
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "Breeze_" .. titleText
+    screenGui.Parent = gui
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+    -- Create main frame
+    local frame = Instance.new("Frame")
+    frame.Name = "MainFrame"
+    frame.Size = UDim2.new(0, 580, 0, 400)
+    frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+    frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    frame.BackgroundTransparency = 0.4
+    frame.BorderSizePixel = 0
+    frame.Parent = screenGui
+    frame.Active = true
+    frame.Draggable = true
+
+    -- Add corner rounding
+    local uiCorner = Instance.new("UICorner")
+    uiCorner.CornerRadius = UDim.new(0, 8)
+    uiCorner.Parent = frame
+
+    -- Add title text
+    local title = Instance.new("TextLabel")
+    title.Name = "Title"
+    title.Size = UDim2.new(1, 0, 0, 40)
+    title.Position = UDim2.new(0, 0, 0, 0)
+    title.BackgroundTransparency = 1
+    title.Text = titleText or "Breeze ui lib"
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextSize = 18
+    title.Font = Enum.Font.GothamBold
+    title.Parent = frame
+    title.ZIndex = 2
+
+    -- Add separator
+    local separator = Instance.new("Frame")
+    separator.Name = "Separator"
+    separator.Size = UDim2.new(1, -20, 0, 1)
+    separator.Position = UDim2.new(0, 10, 0, 40)
+    separator.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    separator.BackgroundTransparency = 0.8
+    separator.BorderSizePixel = 0
+    separator.Parent = frame
+    separator.ZIndex = 2
+
+    -- Create tab button container
+    local tabButtonContainer = Instance.new("Frame")
+    tabButtonContainer.Name = "TabButtonContainer"
+    tabButtonContainer.Size = UDim2.new(0, 150, 1, -50)
+    tabButtonContainer.Position = UDim2.new(0, 10, 0, 50)
+    tabButtonContainer.BackgroundTransparency = 1
+    tabButtonContainer.Parent = frame
+    tabButtonContainer.ZIndex = 3
+
+    -- Add UIListLayout to tab button container
+    local listLayout = Instance.new("UIListLayout")
+    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    listLayout.Padding = UDim.new(0, 5)
+    listLayout.Parent = tabButtonContainer
+
+    -- Track active tab
+    local activeTab = nil
+
+    -- Add hover effect for main frame
+    local function onHover(hovering)
+        local targetTransparency = hovering and 0.3 or 0.4
+        local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        local tween = TweenService:Create(frame, tweenInfo, {BackgroundTransparency = targetTransparency})
+        tween:Play()
     end
-    return obj
-end
 
-function Breeze:CreateWindow(title, opts)
-    opts = opts or {}
-    local size = opts.size or UDim2.new(0, 580, 0, 400)
-    local player = Players.LocalPlayer
-    local gui = player:WaitForChild("PlayerGui")
+    frame.MouseEnter:Connect(function()
+        onHover(true)
+    end)
 
-    -- screen
-    local screenGui = new("ScreenGui", {
-        Name = "Breeze",
-        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-        Parent = gui
-    })
+    frame.MouseLeave:Connect(function()
+        onHover(false)
+    end)
 
-    -- frame
-    local frame = new("Frame", {
-        Name = "MainFrame",
-        Size = size,
-        Position = UDim2.new(0.5, 0, 0.5, 0),
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundColor3 = Color3.fromRGB(30, 30, 30),
-        BackgroundTransparency = 0.4,
-        BorderSizePixel = 0,
-        Parent = screenGui,
-        Active = true,
-        Draggable = true
-    })
+    -- Method to add a tab
+    function window:AddTab(tabName)
+        local tab = {}
 
-    local uiCorner = new("UICorner", {CornerRadius = UDim.new(0, 8), Parent = frame})
+        -- Create tab button
+        local tabButton = Instance.new("TextButton")
+        tabButton.Name = tabName .. "Tab"
+        tabButton.Size = UDim2.new(1, -10, 0, 40)
+        tabButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        tabButton.BackgroundTransparency = 0.7
+        tabButton.BorderSizePixel = 0
+        tabButton.Text = ""
+        tabButton.Parent = tabButtonContainer
+        tabButton.ZIndex = 3
+        tabButton.LayoutOrder = tabButton.LayoutOrder or 0
 
-    local titleLabel = new("TextLabel", {
-        Name = "Title",
-        Size = UDim2.new(1, 0, 0, 40),
-        BackgroundTransparency = 1,
-        Text = title or "Breeze UI",
-        TextColor3 = Color3.fromRGB(255, 255, 255),
-        TextSize = 18,
-        Font = Enum.Font.GothamBold,
-        Parent = frame,
-        ZIndex = 2
-    })
+        -- Add corner rounding to tab button
+        local tabCorner = Instance.new("UICorner")
+        tabCorner.CornerRadius = UDim.new(0, 6)
+        tabCorner.Parent = tabButton
 
-    local separator = new("Frame", {
-        Name = "Separator",
-        Size = UDim2.new(1, -20, 0, 1),
-        Position = UDim2.new(0, 10, 0, 40),
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        BackgroundTransparency = 0.8,
-        BorderSizePixel = 0,
-        Parent = frame,
-        ZIndex = 2
-    })
+        -- Create tab name text (aligned left)
+        local tabText = Instance.new("TextLabel")
+        tabText.Name = "TabName"
+        tabText.Size = UDim2.new(1, -20, 1, 0)
+        tabText.Position = UDim2.new(0, 10, 0, 0)
+        tabText.BackgroundTransparency = 1
+        tabText.Text = tabName
+        tabText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        tabText.TextSize = 14
+        tabText.Font = Enum.Font.GothamBold
+        tabText.TextXAlignment = Enum.TextXAlignment.Left
+        tabText.Parent = tabButton
+        tabText.ZIndex = 3
 
-    local tabButtonContainer = new("Frame", {
-        Name = "TabButtonContainer",
-        Size = UDim2.new(0, 150, 1, -50),
-        Position = UDim2.new(0, 10, 0, 50),
-        BackgroundTransparency = 1,
-        Parent = frame,
-        ZIndex = 3
-    })
+        -- Create content frame
+        local contentFrame = Instance.new("Frame")
+        contentFrame.Name = tabName .. "Content"
+        contentFrame.Size = UDim2.new(1, -170, 1, -50)
+        contentFrame.Position = UDim2.new(0, 170, 0, 50)
+        contentFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        contentFrame.BackgroundTransparency = 0.7
+        contentFrame.BorderSizePixel = 0
+        contentFrame.Visible = false
+        contentFrame.Parent = frame
+        contentFrame.ZIndex = 1
 
-    local listLayout = new("UIListLayout", {
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Padding = UDim.new(0, 5),
-        Parent = tabButtonContainer
-    })
+        -- Add corner rounding to content
+        local contentCorner = Instance.new("UICorner")
+        contentCorner.CornerRadius = UDim.new(0, 6)
+        contentCorner.Parent = contentFrame
 
-    local activeTab
-
-    local api = {}
-
-    function api:CreateTab(tabName)
-        local tabButton = new("TextButton", {
-            Name = tabName .. "Tab",
-            Size = UDim2.new(1, -10, 0, 40),
-            BackgroundColor3 = Color3.fromRGB(30, 30, 30),
-            BackgroundTransparency = 0.7,
-            BorderSizePixel = 0,
-            Text = "",
-            Parent = tabButtonContainer,
-            ZIndex = 3
-        })
-
-        local tabCorner = new("UICorner", {CornerRadius = UDim.new(0, 6), Parent = tabButton})
-
-        local tabText = new("TextLabel", {
-            Name = "TabName",
-            Size = UDim2.new(1, -20, 1, 0),
-            Position = UDim2.new(0, 10, 0, 0),
-            BackgroundTransparency = 1,
-            Text = tabName,
-            TextColor3 = Color3.fromRGB(255, 255, 255),
-            TextSize = 14,
-            Font = Enum.Font.GothamBold,
-            TextXAlignment = Enum.TextXAlignment.Left,
-            Parent = tabButton,
-            ZIndex = 3
-        })
-
-        local contentFrame = new("Frame", {
-            Name = tabName .. "Content",
-            Size = UDim2.new(1, -170, 1, -50),
-            Position = UDim2.new(0, 170, 0, 50),
-            BackgroundColor3 = Color3.fromRGB(30, 30, 30),
-            BackgroundTransparency = 0.7,
-            BorderSizePixel = 0,
-            Visible = false,
-            Parent = frame,
-            ZIndex = 1
-        })
-
-        new("UICorner", {CornerRadius = UDim.new(0, 6), Parent = contentFrame})
-
+        -- Tab click event for switching content
         tabButton.MouseButton1Click:Connect(function()
             if activeTab then
                 activeTab.BackgroundTransparency = 0.7
                 local oldContent = frame:FindFirstChild(activeTab.Name:gsub("Tab", "Content"))
-                if oldContent then oldContent.Visible = false end
+                if oldContent then
+                    oldContent.Visible = false
+                end
             end
             activeTab = tabButton
-            tabButton.BackgroundTransparency = 0.5
+            tabButton.BackgroundTransparency = 0.7 -- Keep transparency at 0.7
             contentFrame.Visible = true
         end)
 
-        return contentFrame
+        -- Add hover effect for tab button
+        local function onTabHover(hovering)
+            if tabButton ~= activeTab then
+                local targetTransparency = hovering and 0.6 or 0.7
+                local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+                local tween = TweenService:Create(tabButton, tweenInfo, {BackgroundTransparency = targetTransparency})
+                tween:Play()
+            end
+        end
+
+        tabButton.MouseEnter:Connect(function()
+            onTabHover(true)
+        end)
+
+        tabButton.MouseLeave:Connect(function()
+            onTabHover(false)
+        end)
+
+        -- Return content frame for adding custom elements
+        tab.ContentFrame = contentFrame
+        return tab
     end
 
-    return api
+    return window
 end
 
 return Breeze

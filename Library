@@ -332,6 +332,7 @@ function Library:AddWindow(title, options)
         local tab = {}
         tab.name = name
         tab.elements = {}
+        tab.elementCount = 0
         
         -- Create tab button
         local yPos = 50 + (#window.tabs * 40)
@@ -406,6 +407,11 @@ function Library:AddWindow(title, options)
         
         tab.button = TabButton
         
+        -- Function to update canvas size
+        local function updateCanvasSize()
+            ContentFrame.CanvasSize = UDim2.new(0, 0, 0, tab.elementCount * 50)
+        end
+        
         -- Add button method
         function tab:AddButton(options)
             local button = {}
@@ -415,7 +421,7 @@ function Library:AddWindow(title, options)
             
             local ButtonContainer = Instance.new("Frame")
             ButtonContainer.Size = UDim2.new(1, -20, 0, 40)
-            ButtonContainer.Position = UDim2.new(0, 10, 0, #tab.contentFrame:GetChildren() * 50)
+            ButtonContainer.Position = UDim2.new(0, 10, 0, tab.elementCount * 50)
             ButtonContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
             ButtonContainer.BorderSizePixel = 0
             ButtonContainer.Name = options.name .. "Container"
@@ -468,7 +474,8 @@ function Library:AddWindow(title, options)
                 end
             end)
             
-            tab.contentFrame.CanvasSize = UDim2.new(0, 0, 0, (#tab.contentFrame:GetChildren() - 1) * 50)
+            tab.elementCount = tab.elementCount + 1
+            updateCanvasSize()
             
             table.insert(tab.elements, button)
             return button
@@ -481,7 +488,7 @@ function Library:AddWindow(title, options)
             
             local LabelContainer = Instance.new("Frame")
             LabelContainer.Size = UDim2.new(1, -20, 0, 60)
-            LabelContainer.Position = UDim2.new(0, 10, 0, #tab.contentFrame:GetChildren() * 70)
+            LabelContainer.Position = UDim2.new(0, 10, 0, tab.elementCount * 70)
             LabelContainer.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
             LabelContainer.BorderSizePixel = 0
             LabelContainer.Name = text .. "Container"
@@ -510,7 +517,8 @@ function Library:AddWindow(title, options)
             Underline.BorderSizePixel = 0
             Underline.Parent = LabelContainer
 
-            tab.contentFrame.CanvasSize = UDim2.new(0, 0, 0, (#tab.contentFrame:GetChildren() - 1) * 70)
+            tab.elementCount = tab.elementCount + 1
+            updateCanvasSize()
             
             table.insert(tab.elements, label)
             return label
@@ -525,7 +533,7 @@ function Library:AddWindow(title, options)
             
             local ToggleContainer = Instance.new("Frame")
             ToggleContainer.Size = UDim2.new(1, -20, 0, 40)
-            ToggleContainer.Position = UDim2.new(0, 10, 0, #tab.contentFrame:GetChildren() * 50)
+            ToggleContainer.Position = UDim2.new(0, 10, 0, tab.elementCount * 50)
             ToggleContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
             ToggleContainer.BorderSizePixel = 0
             ToggleContainer.Name = name .. "Container"
@@ -586,7 +594,8 @@ function Library:AddWindow(title, options)
                 end
             end)
 
-            tab.contentFrame.CanvasSize = UDim2.new(0, 0, 0, (#tab.contentFrame:GetChildren() - 1) * 50)
+            tab.elementCount = tab.elementCount + 1
+            updateCanvasSize()
             
             table.insert(tab.elements, toggle)
             return toggle
@@ -601,7 +610,7 @@ function Library:AddWindow(title, options)
             
             local DropdownContainer = Instance.new("Frame")
             DropdownContainer.Size = UDim2.new(1, -20, 0, 40)
-            DropdownContainer.Position = UDim2.new(0, 10, 0, #tab.contentFrame:GetChildren() * 50)
+            DropdownContainer.Position = UDim2.new(0, 10, 0, tab.elementCount * 50)
             DropdownContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
             DropdownContainer.BorderSizePixel = 0
             DropdownContainer.Name = name .. "DropdownContainer"
@@ -705,7 +714,8 @@ function Library:AddWindow(title, options)
                 end
             end)
 
-            tab.contentFrame.CanvasSize = UDim2.new(0, 0, 0, (#tab.contentFrame:GetChildren() - 1) * 50)
+            tab.elementCount = tab.elementCount + 1
+            updateCanvasSize()
             
             table.insert(tab.elements, dropdown)
             return dropdown
@@ -723,7 +733,7 @@ function Library:AddWindow(title, options)
             
             local SliderContainer = Instance.new("Frame")
             SliderContainer.Size = UDim2.new(1, -20, 0, 50)
-            SliderContainer.Position = UDim2.new(0, 10, 0, #tab.contentFrame:GetChildren() * 50)
+            SliderContainer.Position = UDim2.new(0, 10, 0, tab.elementCount * 50)
             SliderContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
             SliderContainer.BorderSizePixel = 0
             SliderContainer.Name = name .. "SliderContainer"
@@ -846,7 +856,8 @@ function Library:AddWindow(title, options)
                 updateSlider(value)
             end
 
-            tab.contentFrame.CanvasSize = UDim2.new(0, 0, 0, (#tab.contentFrame:GetChildren() - 1) * 50)
+            tab.elementCount = tab.elementCount + 1
+            updateCanvasSize()
             
             table.insert(tab.elements, slider)
             return slider
@@ -861,7 +872,7 @@ function Library:AddWindow(title, options)
             local ParagraphContainer = Instance.new("Frame")
             ParagraphContainer.Name = name .. "Container"
             ParagraphContainer.Size = UDim2.new(1, -20, 0, 120)
-            ParagraphContainer.Position = UDim2.new(0, 10, 0, #tab.contentFrame:GetChildren() * 50)
+            ParagraphContainer.Position = UDim2.new(0, 10, 0, tab.elementCount * 50)
             ParagraphContainer.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
             ParagraphContainer.BorderSizePixel = 0
             ParagraphContainer.Parent = tab.contentFrame
@@ -899,7 +910,8 @@ function Library:AddWindow(title, options)
                 ParagraphText.Text = text
             end
 
-            tab.contentFrame.CanvasSize = UDim2.new(0, 0, 0, (#tab.contentFrame:GetChildren() - 1) * 50 + 120)
+            tab.elementCount = tab.elementCount + 1
+            updateCanvasSize()
             
             table.insert(tab.elements, paragraph)
             return paragraph
@@ -913,7 +925,7 @@ function Library:AddWindow(title, options)
             
             local InputContainer = Instance.new("Frame")
             InputContainer.Size = UDim2.new(1, -20, 0, 40)
-            InputContainer.Position = UDim2.new(0, 10, 0, #tab.contentFrame:GetChildren() * 50)
+            InputContainer.Position = UDim2.new(0, 10, 0, tab.elementCount * 50)
             InputContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
             InputContainer.BorderSizePixel = 0
             InputContainer.Name = name .. "InputContainer"
@@ -968,7 +980,8 @@ function Library:AddWindow(title, options)
                 end
             end)
 
-            tab.contentFrame.CanvasSize = UDim2.new(0, 0, 0, (#tab.contentFrame:GetChildren() - 1) * 50)
+            tab.elementCount = tab.elementCount + 1
+            updateCanvasSize()
             
             table.insert(tab.elements, textbox)
             return textbox
